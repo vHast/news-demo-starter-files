@@ -140,4 +140,26 @@ Then run the air command at the root of your project directory:
 ```go
 air
 ```
-     
+
+### Serving static files
+
+Now that the HTML file for the navigation file has been added, it remains unstyled since assets/style.css file is linked correctly in the **head** of our document, however it doesnt show up.
+
+This is because **we haven't registered the /assets pattern in the HTTP multiplexer.**
+
+We need to make sure that all requests that  match this pattern are served as static files.
+
+The first thing to do is to **instantiate a file server object by passing the directory where all our static files are placed**
+
+```go
+fs := http.FileServer(http.Dir("assets"))
+```
+
+Next we need to tell our router to use this file server object for all paths beginning with the /assets/ prefix
+
+```go
+mux.Handle("/assets/", http.StripPrefix("/assets/", fs))
+```
+
+The **http.StripPrefix()** method modifies the request URL by stripping off the specified prefix before forwaring the handling of the request to the http.Handler in the second parameter.
+
